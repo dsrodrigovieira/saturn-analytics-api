@@ -25,7 +25,8 @@
   "contributors": [],
   "scripts": {
     "dev": "node --watch --env-file=.env server.js",
-    "prod": "node server.js"
+    "build": "node build --output public"
+    "test": "node server.js"
   },
   "dependencies": {
     "express": "^4.21.1",
