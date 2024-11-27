@@ -1,4 +1,4 @@
 .env
+*.ipynb
+*.csv
 node_modules
-.ipynb
-.csv
