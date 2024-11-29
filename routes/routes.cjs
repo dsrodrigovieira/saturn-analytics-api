@@ -4,16 +4,16 @@ const cors = require("cors");
 const rateLimit = require("express-rate-limit");
 const moment = require("moment-timezone");
 const express = require("express");
-const { registerNewUser, deleteUser, signInUser, requestResetUserPassword, resetUserPassword, getUser } = require("../controllers/Users.cjs");
+const cookieParser = require('cookie-parser');
+const { registerNewUser, deleteUser, signInUser, requestResetUserPassword, resetUserPassword, getUser, logoff, validateCookie } = require("../controllers/Users.cjs");
+const {default:authenticateToken} = require("../middleware/authToken.cjs");
 
 // Configurações para o CORS (Cross-Origin Resource Sharing) - Habilita requisições de outras origens.
 const corsOptions = {
-    origin: "http://localhost:8000",
+    origin: "http://localhost:5500",
+    credentials: true, // Permite o envio de cookies e credenciais
     optionsSuccessStatus: 200,
 };
-
-// Configuração JWT
-const SECRET_KEY = process.env.JWT_SECRET || "minha_chave_secreta";
 
 // Limite de requisições (anti-brute force)
 const limiter = rateLimit({
@@ -22,30 +22,15 @@ const limiter = rateLimit({
     message: "Muitas requisições, tente novamente mais tarde.",
 });
   
-// Middleware para autenticação JWT
-const authenticateToken = (req, res, next) => {
-    const authHeader = req.headers["authorization"];
-    const token = authHeader && authHeader.split(" ")[1];
-
-    if (!token) {
-        return res.status(401).json({ message: "Token não fornecido." });
-    }
-
-    jwt.verify(token, SECRET_KEY, (err, user) => {
-        if (err) return res.status(403).json({ message: "Token inválido." });
-        req.user = user;
-        next();
-    });
-};
-  
 // Função para definir as rotas da aplicação.
 const routes = (app) => {
 
-    // Middleware de segurança e parse de JSON
+    // Middleware de segurança, parse de JSON e cookies
     app.use(helmet());
-    app.use(cors());
+    app.use(cors(corsOptions));
     app.use(express.json());
     app.use(limiter);
+    app.use(cookieParser());
 
     // Rota raíz
     app.get("/", (req, res) => res.send(`${moment().tz(process.env.TIMEZONE).toDate()}`));
@@ -59,14 +44,20 @@ const routes = (app) => {
     // Rota de Exclusão
     app.delete("/register", authenticateToken, deleteUser);
 
-    // Rota de Login
-    app.post("/login", signInUser);
+    // Rota de Autenticacao
+    app.post("/auth", signInUser);
+
+    // Rota de validação do cookie (dev)
+    app.get("/auth/validate", validateCookie);
 
     // Rota para solicitar reset de senha
     app.post("/reset-password", requestResetUserPassword);
 
     // Rota para redefinir a senha
     app.post("/reset-password/:token", resetUserPassword);
+
+    // Rota para logout
+    app.post('/logout', logoff);
 
 };
 

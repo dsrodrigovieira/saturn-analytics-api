@@ -15,7 +15,6 @@ const transporter = nodemailer.createTransport({
   },
 });
 
-
 async function registerNewUser (req, res) {
     const { username, email, fullname, password } = req.body;  
     if (!username || !email|| !fullname || !password) {
@@ -85,11 +84,36 @@ async function signInUser (req, res) {
       const token = jwt.sign({ id: user._id, username: user.username }, process.env.JWT_SECRET, {
         expiresIn: "1h",
       });  
-      res.json({ message: "Login bem-sucedido!", token });
+
+      // Configuração do cookie
+      res.cookie('authToken', token, {
+        httpOnly: true, // Previne acesso via JavaScript no navegador
+        //secure: process.env.NODE_ENV === 'production', // Apenas HTTPS em produção
+        secure: false,
+        sameSite: 'strict', // Previne CSRF
+        maxAge: 3600000, // 1 hora
+      });
+
+      res.status(200).json({ message: 'Login realizado com sucesso!' });
     } catch (err) {
       console.error(err);
       res.status(500).json({ message: "Erro no servidor." });
     }
+};
+
+async function validateCookie (req, res) {
+  const token = req.cookies.authToken;
+
+  if (!token) {
+    return res.status(401).json({ message: "Token inválido ou expirado" });
+  }
+
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    return res.status(200).json({ message: "Autenticado", user: decoded });
+  } catch (err) {
+    return res.status(401).json({ message: "Token inválido ou expirado" });
+  }
 }
 
 async function requestResetUserPassword (req, res) {
@@ -183,4 +207,13 @@ async function getUser (req, res) {
     }
 }
 
-module.exports = { registerNewUser, deleteUser, signInUser, requestResetUserPassword, resetUserPassword, getUser };
+function logoff (req, res) {
+  res.clearCookie('authToken', {
+    httpOnly: true,
+    // secure: process.env.NODE_ENV === 'production',
+    sameSite: 'strict',
+  });
+  res.json({ message: 'Logout realizado com sucesso!' });
+};
+
+module.exports = { registerNewUser, deleteUser, signInUser, requestResetUserPassword, resetUserPassword, getUser, logoff, validateCookie };
