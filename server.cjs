@@ -8,7 +8,7 @@ const cors = require("cors");
 const rateLimit = require("express-rate-limit");
 const nodemailer = require("nodemailer");
 const crypto = require("crypto");
-const User = require("./models/User.cjs");
+const User = require("./models/Users.cjs");
 const moment = require("moment-timezone");
 
 dotenv.config();
