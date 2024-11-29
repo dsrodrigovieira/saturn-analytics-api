@@ -36,6 +36,23 @@ const limiter = rateLimit({
   max: 100, // Limite de 100 requisições
   message: "Muitas requisições, tente novamente mais tarde.",
 });
+
+// Middleware para autenticação JWT
+const authenticateToken = (req, res, next) => {
+  const authHeader = req.headers["authorization"];
+  const token = authHeader && authHeader.split(" ")[1];
+
+  if (!token) {
+    return res.status(401).json({ message: "Token não fornecido." });
+  }
+
+  jwt.verify(token, SECRET_KEY, (err, user) => {
+    if (err) return res.status(403).json({ message: "Token inválido." });
+    req.user = user;
+    next();
+  });
+};
+
 app.use(limiter);
 
 // Rotas
@@ -52,7 +69,7 @@ app.post("/register", async (req, res) => {
 
   try {
     // Verifica se o usuário já existe
-    const existingUser = await User.findOne({ $or: [{ nome:username }, { email:email }] });
+    const existingUser = await User.findOne({ $or: [{ username:username }, { email:email }] });
 
     if (existingUser) {
       return res.status(400).json({ message: "Usuário ou email já estão em uso." });
@@ -66,6 +83,54 @@ app.post("/register", async (req, res) => {
     await newUser.save();
 
     res.status(201).json({ message: "Usuário registrado com sucesso!" });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Erro no servidor." });
+  }
+});
+
+// Rota de Registro
+app.get("/users", authenticateToken, async (req, res) => {
+  const { username, email } = req.body;
+  if (!username && !email) {
+    return res.status(400).json({ message: "Informe o Usuário ou Email." });
+  }
+  try {
+    // Verifica se o usuário já existe
+    const existingUser = await User.findOne({ $or: [{ username:username }, { email:email }] });
+    if (!existingUser) {
+      console.log(req.body)
+      return res.status(400).json({ message: "Usuário não encontrado." });
+    } else {
+      return res.status(200).json(existingUser);
+    }
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Erro no servidor." });
+  }
+});
+
+// Rota de exclusão
+app.delete("/register", authenticateToken, async (req, res) => {
+  const { email, password } = req.body;
+  if (!password || !email) {
+    return res.status(400).json({ message: "Informe o Email e a Senha para exclusão." });
+  }
+  try {
+    // Verifica se o usuário já existe
+    const existingUser = await User.findOne({ email:email });
+    if (!existingUser) {   
+      return res.status(400).json({ message: "Usuário não encontrado." });
+    } else {
+      // Verifica a senha
+      const isPasswordValid = await bcrypt.compare(password, existingUser.password);
+      if (!isPasswordValid) {
+        return res.status(400).json({ message: "Senha incorreta." });
+      } else {
+        await User.deleteOne({ email:email })
+        return res.status(200).json( { message: `Usuário ${existingUser.fullname} (${existingUser.username}) excluído com sucesso` });
+      }
+    }
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "Erro no servidor." });
@@ -104,22 +169,6 @@ app.post("/login", async (req, res) => {
     res.status(500).json({ message: "Erro no servidor." });
   }
 });
-
-// Middleware para autenticação JWT
-const authenticateToken = (req, res, next) => {
-  const authHeader = req.headers["authorization"];
-  const token = authHeader && authHeader.split(" ")[1];
-
-  if (!token) {
-    return res.status(401).json({ message: "Token não fornecido." });
-  }
-
-  jwt.verify(token, SECRET_KEY, (err, user) => {
-    if (err) return res.status(403).json({ message: "Token inválido." });
-    req.user = user;
-    next();
-  });
-};
 
 // Rota protegida
 app.get("/protected", authenticateToken, (req, res) => {
