@@ -8,6 +8,6 @@ const app = express();
 routes(app);
 
 // Inicia o servidor na porta 3000 e exibe uma mensagem no console.
-app.listen(4000, () => {
-    console.log("Servidor ouvindo na porta 4000...");
+app.listen(process.env.PORT, () => {
+    console.log(`Servidor ouvindo na porta ${process.env.PORT}...`);
 });
