@@ -1,19 +1,10 @@
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const crypto = require("crypto");
-const nodemailer = require("nodemailer");
+const transporter = require("../middleware/mailTransporter.cjs");
 const User = require("../models/Users.cjs");
 
 require('dotenv').config();
-
-// Configuração do transportador de email
-const transporter = nodemailer.createTransport({
-  service: "Gmail",
-  auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS,    
-  },
-});
 
 async function registerNewUser (req, res) {
     const { username, email, fullname, password } = req.body;  
@@ -100,21 +91,6 @@ async function signInUser (req, res) {
       res.status(500).json({ message: "Erro no servidor." });
     }
 };
-
-async function validateCookie (req, res) {
-  const token = req.cookies.authToken;
-
-  if (!token) {
-    return res.status(401).json({ message: "Token inválido ou expirado" });
-  }
-
-  try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    return res.status(200).json({ message: "Autenticado", user: decoded });
-  } catch (err) {
-    return res.status(401).json({ message: "Token inválido ou expirado" });
-  }
-}
 
 async function requestResetUserPassword (req, res) {
     const { email } = req.body;  
@@ -216,4 +192,4 @@ function logoff (req, res) {
   res.json({ message: 'Logout realizado com sucesso!' });
 };
 
-module.exports = { registerNewUser, deleteUser, signInUser, requestResetUserPassword, resetUserPassword, getUser, logoff, validateCookie };
+module.exports = { registerNewUser, deleteUser, signInUser, requestResetUserPassword, resetUserPassword, getUser, logoff };

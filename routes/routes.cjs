@@ -5,8 +5,9 @@ const rateLimit = require("express-rate-limit");
 const moment = require("moment-timezone");
 const express = require("express");
 const cookieParser = require('cookie-parser');
-const { registerNewUser, deleteUser, signInUser, requestResetUserPassword, resetUserPassword, getUser, logoff, validateCookie } = require("../controllers/Users.cjs");
+const { registerNewUser, deleteUser, signInUser, requestResetUserPassword, resetUserPassword, getUser, logoff } = require("../controllers/Users.cjs");
 const {default:authenticateToken} = require("../middleware/authToken.cjs");
+const {default:validateCookie} = require("../middleware/validateCookie.cjs");
 
 // Configurações para o CORS (Cross-Origin Resource Sharing) - Habilita requisições de outras origens.
 const corsOptions = {
