@@ -78,7 +78,7 @@ async function signInUser (req, res) {
 
       // Configuração do cookie
       res.cookie('authToken', token, {
-        httpOnly: true, // Previne acesso via JavaScript no navegador
+        //httpOnly: true, // Previne acesso via JavaScript no navegador
         //secure: process.env.NODE_ENV === 'production', // Apenas HTTPS em produção
         secure: false,
         sameSite: 'strict', // Previne CSRF
