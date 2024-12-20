@@ -67,7 +67,7 @@ const routes = (app) => {
     app.post('/kpi-results', authenticateToken, getKpiResults);
 
     // Rota para buscar KPIs
-    app.get('/kpi', authenticateToken, getKpis);
+    app.post('/kpi', authenticateToken, getKpis);
 
 };
 
