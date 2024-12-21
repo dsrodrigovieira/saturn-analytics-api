@@ -5,8 +5,12 @@ const rateLimit = require("express-rate-limit");
 const moment = require("moment-timezone");
 const express = require("express");
 const cookieParser = require('cookie-parser');
-const { registerNewUser, deleteUser, signInUser, requestResetUserPassword, resetUserPassword, getUser, logoff, validateCookie } = require("../controllers/Users.cjs");
+const { registerNewUser, deleteUser, signInUser, requestResetUserPassword, resetUserPassword, getUser, logoff } = require("../controllers/Users.cjs");
 const {default:authenticateToken} = require("../middleware/authToken.cjs");
+const {default:validateCookie} = require("../middleware/validateCookie.cjs");
+const { getKpiResults } = require("../controllers/KpiResults.cjs");
+const { getKpis } = require("../controllers/Kpis.cjs");
+
 
 // Configurações para o CORS (Cross-Origin Resource Sharing) - Habilita requisições de outras origens.
 const corsOptions = {
@@ -58,6 +62,12 @@ const routes = (app) => {
 
     // Rota para logout
     app.post('/logout', logoff);
+
+    // Rota para buscar resultados dos KPIs
+    app.post('/kpi-results', authenticateToken, getKpiResults);
+
+    // Rota para buscar KPIs
+    app.post('/kpi', authenticateToken, getKpis);
 
 };
 
