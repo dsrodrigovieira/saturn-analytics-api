@@ -64,10 +64,10 @@ const routes = (app) => {
     app.post('/logout', logoff);
 
     // Rota para buscar resultados dos KPIs
-    app.post('/kpi-results', authenticateToken, getKpiResults);
+    app.get('/results/:cnes/:year/:month', authenticateToken, getKpiResults);
 
     // Rota para buscar KPIs
-    app.post('/kpi', authenticateToken, getKpis);
+    app.get('/kpi', authenticateToken, getKpis);
 
 };
 
