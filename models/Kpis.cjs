@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
 
 const KpisSchema = new mongoose.Schema({
+    sequencia: { type: Number, required: true },
     titulo: { type: String, required: true },
     unidade: { type: String, required: true },
     dominio: { type: String, required: true },
