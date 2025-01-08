@@ -84,10 +84,9 @@ async function signInUser (req, res) {
         //sameSite: 'strict', // Previne CSRF
         sameSite: 'none',
         maxAge: 3600000, // 1 hora
-      });
-      res.cookie('organizationCnes', user.organization_cnes);
+      });    
 
-      res.status(200).json({ message: `Bem-vindo(a) ${user.fullname}!`, token });
+      res.status(200).json({ message: `Bem-vindo(a) ${user.fullname}!`, cnes:user.organization_cnes });
     } catch (err) {
       console.error(err);
       res.status(500).json({ message: "Erro no servidor." });
