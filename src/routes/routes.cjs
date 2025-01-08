@@ -14,7 +14,7 @@ const { getKpis } = require("../controllers/Kpis.cjs");
 
 // Configurações para o CORS (Cross-Origin Resource Sharing) - Habilita requisições de outras origens.
 const corsOptions = {
-    origin: "http://localhost:5500",
+    origin: process.env.CORS_APP,
     credentials: true, // Permite o envio de cookies e credenciais
     optionsSuccessStatus: 200,
 };
