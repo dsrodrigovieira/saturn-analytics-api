@@ -74,8 +74,8 @@ async function signInUser (req, res) {
       // Gera o token JWT
       const token = jwt.sign({ id: user._id, username: user.username }, process.env.JWT_SECRET, {
         expiresIn: "1h",
-      });  
-
+      }); 
+      
       // Configuração do cookie
       res.cookie('authToken', token, {
         //httpOnly: true, // Previne acesso via JavaScript no navegador
@@ -84,8 +84,9 @@ async function signInUser (req, res) {
         sameSite: 'strict', // Previne CSRF
         maxAge: 3600000, // 1 hora
       });
+      res.cookie('organizationCnes', user.organization_cnes);
 
-      res.status(200).json({ message: 'Login realizado com sucesso!' });
+      res.status(200).json({ message: `Bem-vindo(a) ${user.fullname}!` });
     } catch (err) {
       console.error(err);
       res.status(500).json({ message: "Erro no servidor." });

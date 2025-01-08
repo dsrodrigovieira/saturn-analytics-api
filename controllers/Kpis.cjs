@@ -4,6 +4,7 @@ async function getKpis(req,res) {
 
     const projection = {
         _id: 0,
+        sequencia: 1,
         titulo: 1,
         unidade: 1,
         dominio: 1,
@@ -14,15 +15,15 @@ async function getKpis(req,res) {
     }
 
     try {
-        const kpis = await Kpis.find({},projection)
+        const kpis = await Kpis.find({},projection).sort({sequencia:1});
         if (kpis){     
             return res.status(201).json({ message: kpis });
         } else {
-            console.log(req.body)
+            //console.log(req.body)
             return res.status(400).json({ message: "KPIs não encontrados." });    
         }
     } catch (err) {
-        console.error(err);
+        //console.error(err);
         return res.status(500).json({ message: "Erro no servidor" });
     }    
 }

@@ -5,7 +5,7 @@ const UserSchema = new mongoose.Schema({
   email: { type: String, required: true, unique: true },
   fullname: { type: String, required: true },  
   password: { type: String, required: true },
-  organization_id: { type: mongoose.Types.ObjectId, default: new mongoose.Types.ObjectId('6745d7873f4e39e161319575') },  
+  organization_cnes: { type: Number, required: true, default: 9876543 },  
   ocupation: { type: String, default: null },
   birthdate: { type: Date, default: null },
   profile: { type: String, default: "User" },

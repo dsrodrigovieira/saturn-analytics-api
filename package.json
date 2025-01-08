@@ -24,8 +24,9 @@
   },
   "contributors": [],
   "scripts": {
-    "dev": "node --watch server.cjs",
-    "test": ""
+    "dev": "node --watch --env-file=.env server.cjs",
+    "build": "node build --output public",
+    "test": "node server.cjs"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",
