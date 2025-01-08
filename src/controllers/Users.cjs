@@ -78,22 +78,14 @@ async function signInUser (req, res) {
       
       // Configuração do cookie
       res.cookie('authToken', token, {
-        // httpOnly: false, // Previne acesso via JavaScript no navegador
-        // secure: process.env.NODE_ENV === 'production', // Apenas HTTPS em produção
+        httpOnly: false, // Previne acesso via JavaScript no navegador
+        secure: process.env.NODE_ENV === 'production', // Apenas HTTPS em produção
         // secure: false,
         // sameSite: 'strict', // Previne CSRF
-        // sameSite: 'none',
+        sameSite: 'none',
         maxAge: 3600000, // 1 hora
       });    
-      res.cookie('organizationCnes', user.organization_cnes, {
-        // httpOnly: false, // Previne acesso via JavaScript no navegador
-        //secure: process.env.NODE_ENV === 'production', // Apenas HTTPS em produção
-        // secure: true,
-        //sameSite: 'strict', // Previne CSRF
-        // sameSite: 'none',
-        maxAge: 3600000, // 1 hora
-      });   
-
+      res.cookie('organizationCnes', user.organization_cnes, {secure: process.env.NODE_ENV === 'production', sameSite: 'none', maxAge: 3600000});   
       res.status(200).json({ message: `Bem-vindo(a) ${user.fullname}!`});
     } catch (err) {
       console.error(err);
@@ -194,7 +186,7 @@ async function getUser (req, res) {
 
 function logoff (req, res) {
   res.clearCookie('authToken', {
-    httpOnly: false,
+    //httpOnly: false,
     secure: true,
     //sameSite: 'strict',
     sameSite: 'none',
