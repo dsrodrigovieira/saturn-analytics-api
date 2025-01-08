@@ -78,15 +78,20 @@ async function signInUser (req, res) {
       
       // Configuração do cookie
       res.cookie('authToken', token, {
-        httpOnly: false, // Previne acesso via JavaScript no navegador
+        httpOnly: true, // Previne acesso via JavaScript no navegador
         secure: process.env.NODE_ENV === 'production', // Apenas HTTPS em produção
         // secure: false,
         // sameSite: 'strict', // Previne CSRF
         sameSite: 'none',
         maxAge: 3600000, // 1 hora
       });    
-      res.cookie('organizationCnes', user.organization_cnes, {secure: process.env.NODE_ENV === 'production', sameSite: 'none', maxAge: 3600000});   
-      res.status(200).json({ message: `Bem-vindo(a) ${user.fullname}!`});
+      //res.cookie('organizationCnes', user.organization_cnes, {
+      //  secure: process.env.NODE_ENV === 'production',
+      //  sameSite: 'none', 
+      //  maxAge: 3600000
+      //});   
+      res.status(200).json({ message: `Bem-vindo(a) ${user.fullname}!`,
+                             cnes: user.organization_cnes });
     } catch (err) {
       console.error(err);
       res.status(500).json({ message: "Erro no servidor." });
@@ -186,10 +191,10 @@ async function getUser (req, res) {
 
 function logoff (req, res) {
   res.clearCookie('authToken', {
-    //httpOnly: false,
-    secure: true,
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
     //sameSite: 'strict',
-    sameSite: 'none',
+    sameSite: 'none'
   });
   res.json({ message: 'Logout realizado com sucesso!' });
 };
