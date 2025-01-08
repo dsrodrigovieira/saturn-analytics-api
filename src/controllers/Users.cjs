@@ -87,7 +87,7 @@ async function signInUser (req, res) {
       });
       res.cookie('organizationCnes', user.organization_cnes);
 
-      res.status(200).json({ message: `Bem-vindo(a) ${user.fullname}!` });
+      res.status(200).json({ message: `Bem-vindo(a) ${user.fullname}!`, token });
     } catch (err) {
       console.error(err);
       res.status(500).json({ message: "Erro no servidor." });
