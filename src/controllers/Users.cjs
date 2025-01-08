@@ -78,10 +78,11 @@ async function signInUser (req, res) {
       
       // Configuração do cookie
       res.cookie('authToken', token, {
-        //httpOnly: true, // Previne acesso via JavaScript no navegador
-        //secure: process.env.NODE_ENV === 'production', // Apenas HTTPS em produção
-        secure: false,
-        sameSite: 'strict', // Previne CSRF
+        httpOnly: true, // Previne acesso via JavaScript no navegador
+        secure: process.env.NODE_ENV === 'production', // Apenas HTTPS em produção
+        //secure: false,
+        //sameSite: 'strict', // Previne CSRF
+        sameSite: 'none',
         maxAge: 3600000, // 1 hora
       });
       res.cookie('organizationCnes', user.organization_cnes);
@@ -187,8 +188,9 @@ async function getUser (req, res) {
 function logoff (req, res) {
   res.clearCookie('authToken', {
     httpOnly: true,
-    // secure: process.env.NODE_ENV === 'production',
-    sameSite: 'strict',
+    secure: process.env.NODE_ENV === 'production',
+    //sameSite: 'strict',
+    sameSite: 'none',
   });
   res.json({ message: 'Logout realizado com sucesso!' });
 };
