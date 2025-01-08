@@ -32,26 +32,26 @@ async function registerNewUser (req, res) {
 async function deleteUser (req, res) {
     const { email, password } = req.body;
     if (!password || !email) {
-        return res.status(400).json({ message: "Informe o Email e a Senha para exclusão." });
+      return res.status(400).json({ message: "Informe o Email e a Senha para exclusão." });
     }
     try {
         // Verifica se o usuário já existe
         const existingUser = await User.findOne({ email:email });
         if (!existingUser) {   
-        return res.status(400).json({ message: "Usuário não encontrado." });
+          return res.status(400).json({ message: "Usuário não encontrado." });
         } else {
-        // Verifica a senha
-        const isPasswordValid = await bcrypt.compare(password, existingUser.password);
-        if (!isPasswordValid) {
+          // Verifica a senha
+          const isPasswordValid = await bcrypt.compare(password, existingUser.password);
+          if (!isPasswordValid) {
             return res.status(400).json({ message: "Senha incorreta." });
-        } else {
+          } else {
             await User.deleteOne({ email:email })
             return res.status(200).json( { message: `Usuário ${existingUser.fullname} (${existingUser.username}) excluído com sucesso` });
-        }
+          }
         }
     } catch (err) {
-        console.error(err);
-        res.status(500).json({ message: "Erro no servidor." });
+      console.error(err);
+      res.status(500).json({ message: "Erro no servidor." });
     }
 }
 
@@ -72,26 +72,15 @@ async function signInUser (req, res) {
         return res.status(400).json({ message: "Credenciais inválidas." });
       }  
       // Gera o token JWT
-      const token = jwt.sign({ id: user._id, username: user.username }, process.env.JWT_SECRET, {
-        expiresIn: "1h",
-      }); 
-      
+      const token = jwt.sign({ id: user._id, username: user.username }, process.env.JWT_SECRET, { expiresIn: "1h" });       
       // Configuração do cookie
       res.cookie('authToken', token, {
         httpOnly: true, // Previne acesso via JavaScript no navegador
         secure: process.env.NODE_ENV === 'production', // Apenas HTTPS em produção
-        // secure: false,
-        // sameSite: 'strict', // Previne CSRF
         sameSite: 'none',
         maxAge: 3600000, // 1 hora
       });    
-      //res.cookie('organizationCnes', user.organization_cnes, {
-      //  secure: process.env.NODE_ENV === 'production',
-      //  sameSite: 'none', 
-      //  maxAge: 3600000
-      //});   
-      res.status(200).json({ message: `Bem-vindo(a) ${user.fullname}!`,
-                             cnes: user.organization_cnes });
+      res.status(200).json({ message: `Bem-vindo(a) ${user.fullname}!`, cnes: user.organization_cnes });
     } catch (err) {
       console.error(err);
       res.status(500).json({ message: "Erro no servidor." });
@@ -112,12 +101,9 @@ async function requestResetUserPassword (req, res) {
       const resetToken = crypto.randomBytes(32).toString("hex");
       user.resetPasswordToken = resetToken;
       user.resetPasswordExpires = Date.now() + 3600000; // 1 hora
-      await user.save();
-  
+      await user.save();  
       // Monta o link de reset
-      const resetURL = `http://${req.headers.host}/reset-password/${resetToken}`;
-      console.log(resetURL);
-  
+      const resetURL = `http://${req.headers.host}/reset-password/${resetToken}`;  
       // Envia o email
       await transporter.sendMail({
         to: user.email,
@@ -129,8 +115,7 @@ async function requestResetUserPassword (req, res) {
           <a href="${resetURL}">${resetURL}</a>
           <p>O link expira em 1 hora.</p>
         `,
-      });
-  
+      });  
       res.json({ message: "Email de redefinição de senha enviado!" });
     } catch (err) {
       console.error(err);
@@ -140,28 +125,23 @@ async function requestResetUserPassword (req, res) {
 
 async function resetUserPassword (req, res) {
     const { token } = req.params;
-    const { password } = req.body;
-  
+    const { password } = req.body;  
     if (!password) {
       return res.status(400).json({ message: "Senha é obrigatória." });
-    }
-  
+    }  
     try {
       const user = await User.findOne({
         resetPasswordToken: token,
         resetPasswordExpires: { $gt: Date.now() }, // Verifica se o token ainda é válido
-      });
-  
+      });  
       if (!user) {
         return res.status(400).json({ message: "Token inválido ou expirado." });
-      }
-  
+      }  
       // Atualiza a senha e limpa o token de reset
       user.password = await bcrypt.hash(password, 10);
       user.resetPasswordToken = null;
       user.resetPasswordExpires = null;
-      await user.save();
-  
+      await user.save();  
       res.json({ message: "Senha redefinida com sucesso!" });
     } catch (err) {
       console.error(err);
@@ -178,7 +158,6 @@ async function getUser (req, res) {
       // Verifica se o usuário já existe
       const existingUser = await User.findOne({ $or: [{ username:username }, { email:email }] });
       if (!existingUser) {
-        console.log(req.body)
         return res.status(400).json({ message: "Usuário não encontrado." });
       } else {
         return res.status(200).json(existingUser);
@@ -193,7 +172,6 @@ function logoff (req, res) {
   res.clearCookie('authToken', {
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production',
-    //sameSite: 'strict',
     sameSite: 'none'
   });
   res.json({ message: 'Logout realizado com sucesso!' });
