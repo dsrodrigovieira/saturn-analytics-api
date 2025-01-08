@@ -1,8 +1,8 @@
 {
-  "name": "",
+  "name": "saturn-analytics-api",
   "version": "1.0.0",
   "description": "",
-  "main": "server.js",
+  "main": "server.cjs",
   "type": "module",
   "license": "AGPL-version-3.0",
   "private": false,
@@ -18,9 +18,9 @@
   "bugs": "",
   "keywords": [],
   "author": {
-    "name": "",
-    "email": "",
-    "url": ""
+    "name": "Rodrigo Vieira",
+    "email": "dsrodrigovieira@gmail.com",
+    "url": "https://github.com/dsrodrigovieira/"
   },
   "contributors": [],
   "scripts": {
