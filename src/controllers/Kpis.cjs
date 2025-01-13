@@ -1,31 +1,36 @@
+// Importa o modelo de dados de KPIs
 const Kpis = require("../models/Kpis.cjs");
 
-async function getKpis(req,res) {
-
+// Função assíncrona para buscar e retornar os KPIs
+async function getKpis(req, res) {
+    // Define os campos que serão retornados na consulta (projeção)
     const projection = {
-        _id: 0,
-        sequencia: 1,
-        titulo: 1,
-        unidade: 1,
-        dominio: 1,
-        descricao: 1,
-        meta: 1,
-        meta_valor: 1,
-        direcao: 1
-    }
+        _id: 0,         
+        sequencia: 1,   
+        titulo: 1,      
+        unidade: 1,     
+        dominio: 1,     
+        descricao: 1,   
+        meta: 1,        
+        meta_valor: 1,  
+        direcao: 1      
+    };
 
     try {
-        const kpis = await Kpis.find({},projection).sort({sequencia:1});
-        if (kpis){     
+        // Busca todos os KPIs no banco de dados aplicando a projeção e ordenando pelo campo 'sequencia'
+        const kpis = await Kpis.find({}, projection).sort({ sequencia: 1 });
+
+        // Verifica se os KPIs foram encontrados
+        if (kpis) {
             return res.status(201).json({ message: kpis });
         } else {
-            //console.log(req.body)
             return res.status(400).json({ message: "KPIs não encontrados." });    
         }
     } catch (err) {
-        //console.error(err);
+        // Retorna erro 500 (erro interno do servidor) em caso de falha na consulta
         return res.status(500).json({ message: "Erro no servidor" });
     }    
 }
 
+// Exporta a função para ser usada em outros módulos
 module.exports = { getKpis };
