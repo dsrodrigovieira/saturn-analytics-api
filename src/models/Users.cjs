@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 
+// Define o esquema (schema) para a coleção "user" no MongoDB
 const UserSchema = new mongoose.Schema({
   username: { type: String, required: true, unique: true },
   email: { type: String, required: true, unique: true },
@@ -15,4 +16,6 @@ const UserSchema = new mongoose.Schema({
   resetPasswordExpires: { type: Date, default: null},  
 });
 
+// Exporta o modelo "user" baseado no esquema definido acima
+// Esse modelo será utilizado para criar, ler, atualizar e excluir documentos na coleção "user"
 module.exports = mongoose.model("user", UserSchema);
