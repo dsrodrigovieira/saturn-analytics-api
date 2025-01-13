@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 
+// Define o esquema (schema) para a coleção "kpi_results" no MongoDB
 const KpiResultsSchema = new mongoose.Schema({
   organization_cnes: { type: Number, required: true },
   year: { type: Number, required: true },
@@ -143,5 +144,7 @@ const KpiResultsSchema = new mongoose.Schema({
   }
 });
 
+// Exporta o modelo "kpi_results" baseado no esquema definido acima
+// Esse modelo será utilizado para criar, ler, atualizar e excluir documentos na coleção "kpi_results"
 module.exports = mongoose.model("kpi_results", KpiResultsSchema);
 
