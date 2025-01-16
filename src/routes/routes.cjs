@@ -6,7 +6,7 @@ const express = require("express");
 const cookieParser = require('cookie-parser');
 
 // Importa os controladores das rotas de usuários e KPIs
-const { registerNewUser, deleteUser, signInUser, requestResetUserPassword, resetUserPassword, getUser, logoff } = require("../controllers/Users.cjs");
+const { registerNewUser, deleteUser, signInUser, requestResetUserPassword, resetUserPassword, getUser, logoff, signInDemo } = require("../controllers/Users.cjs");
 const { default: authenticateToken } = require("../middleware/authToken.cjs"); // Middleware para autenticação via token
 const { default: validateCookie } = require("../middleware/validateCookie.cjs"); // Middleware para validação de cookies
 const { getKpiResults } = require("../controllers/KpiResults.cjs"); // Controlador para obter resultados de KPIs
@@ -40,7 +40,8 @@ const routes = (app) => {
     app.post("/register", registerNewUser); // Rota para registrar novos usuários
     app.get("/users", authenticateToken, getUser); // Rota para obter informações de usuários (requer autenticação)
     app.delete("/register", authenticateToken, deleteUser); // Rota para deletar usuários registrados (requer autenticação)
-    app.post("/auth", signInUser); // Rota para autenticação de usuários
+    app.post("/auth/login", signInUser); // Rota para autenticação de usuários
+    app.post("/auth/demo", signInDemo); // Rota para autenticação do usuário de demonstração
     app.get("/auth/validate", validateCookie); // Rota para validação de cookies de autenticação
     app.post("/reset-password", requestResetUserPassword); // Rota para solicitar redefinição de senha
     app.post("/reset-password/:token", resetUserPassword); // Rota para redefinir a senha usando um token

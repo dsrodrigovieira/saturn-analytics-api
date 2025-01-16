@@ -234,5 +234,41 @@ function logoff(req, res) {
     res.json({ message: 'Logout realizado com sucesso!' });
 }
 
+// Função para autenticar o usuário da demonstração
+async function signInDemo(req, res) {
+    try {
+        // Busca o usuário
+        const user = await User.findOne({ username: process.env.DEMO_USERNAME });
+
+        if (!user) {
+            return res.status(400).json({ message: "Credenciais inválidas." });
+        }
+
+        // Verifica se a senha fornecida é válida
+        const isPasswordValid = await bcrypt.compare(process.env.DEMO_PASSWORD, user.password);
+
+        if (!isPasswordValid) {
+            return res.status(400).json({ message: "Credenciais inválidas." });
+        }
+
+        // Gera um token JWT para autenticação
+        const token = jwt.sign({ id: user._id, username: user.username }, process.env.JWT_SECRET, { expiresIn: "1h" });
+
+        // Configura o cookie de autenticação
+        res.cookie('authToken', token, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: 'none',
+            maxAge: 3600000, // 1 hora
+        });
+
+        // Retorna mensagem de boas-vindas e o código da organização do usuário
+        res.status(200).json({ message: `Bem-vindo(a) à demonstração do Saturn Analytics!`, cnes: user.organization_cnes });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: "Erro no servidor." });
+    }
+}
+
 // Exporta todas as funções para uso em outros módulos
-module.exports = { registerNewUser, deleteUser, signInUser, requestResetUserPassword, resetUserPassword, getUser, logoff };
+module.exports = { registerNewUser, deleteUser, signInUser, requestResetUserPassword, resetUserPassword, getUser, logoff, signInDemo };
