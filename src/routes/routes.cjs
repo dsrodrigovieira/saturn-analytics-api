@@ -14,9 +14,7 @@ const { getKpis } = require("../controllers/Kpis.cjs"); // Controlador para obte
 
 // Configuração das opções do CORS
 const corsOptions = {
-    // origin: process.env.CORS_APP,
-    origin: "http://localhost:5500",
-    // origin: ["http://localhost:3000/auth/demo","http://localhost:3000/logout"],
+    origin: process.env.CORS_APP,
     credentials: true,
     optionsSuccessStatus: 200,
 };
@@ -42,8 +40,8 @@ const routes = (app) => {
     app.post("/auth/demo", entrarDemo); // Rota para autenticação do usuário de demonstração
     app.get("/auth/validar", validateCookie); // Rota para validação de cookies de autenticação
     app.post('/sair', sair); // Rota para logout de usuários
-    app.get('/resultados/:cnes/:ano/:mes', getResultadosKpis); // Rota para obter resultados de KPIs (requer autenticação)
-    app.get('/kpi', getKpis); // Rota para obter a lista de KPIs (requer autenticação)
+    app.get('/resultados/:cnes/:ano/:mes', authenticateToken, getResultadosKpis); // Rota para obter resultados de KPIs (requer autenticação)
+    app.get('/kpi', authenticateToken, getKpis); // Rota para obter a lista de KPIs (requer autenticação)
 };
 
 // Exporta as rotas como padrão do módulo

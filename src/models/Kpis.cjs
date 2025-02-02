@@ -10,7 +10,6 @@ const KpisSchema = new mongoose.Schema({
     meta: { type: String, required: true },
     meta_valor: { type: Number, required: true },
     direcao: { type: String, required: true },
-    //estratificacoes: { type: mongoose.Types.Subdocument, required: true },
     estratificacoes: []
 });
 // Esse modelo será utilizado para criar, ler, atualizar e excluir documentos na coleção "kpis"
