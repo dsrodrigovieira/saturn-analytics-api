@@ -17,7 +17,7 @@ function authenticateToken(req, res, next) {
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
         // Adiciona as informações decodificadas do token ao objeto `req`, permitindo acesso em outras partes da aplicação
-        req.user = decoded;        
+        req.usuario = decoded;        
         next();
     } catch (error) {
         // Retorna um erro 403 (proibido) caso o token seja inválido
