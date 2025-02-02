@@ -13,7 +13,8 @@ async function getKpis(req, res) {
         descricao: 1,   
         meta: 1,        
         meta_valor: 1,  
-        direcao: 1      
+        direcao: 1,
+        estratificacoes: 1     
     };
 
     try {
