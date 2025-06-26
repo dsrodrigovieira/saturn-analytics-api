@@ -21,7 +21,7 @@ const corsOptions = {
 
 // Configuração do middleware de limite de requisições
 const limiter = rateLimit({
-    windowMs: 15 * 60 * 1000, // Janela de tempo de 15 minutos
+    windowMs: 60 * 60 * 1000, // Janela de tempo de 15 minutos
     max: 100,
     message: "Muitas requisições, tente novamente mais tarde.",
 });
